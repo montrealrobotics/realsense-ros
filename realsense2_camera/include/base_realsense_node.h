@@ -27,6 +27,7 @@
 
 #include <diagnostic_updater/diagnostic_updater.hpp>
 #include <diagnostic_updater/publisher.hpp>
+#include <std_srvs/srv/empty.hpp>
 #include "realsense2_camera_msgs/msg/imu_info.hpp"
 #include "realsense2_camera_msgs/msg/extrinsics.hpp"
 #include "realsense2_camera_msgs/msg/metadata.hpp"
@@ -154,6 +155,7 @@ namespace realsense2_camera
         std::string _camera_name;
         std::vector<rs2_option> _monitor_options;
         rclcpp::Logger _logger;
+        rclcpp::Service<std_srvs::srv::Empty>::SharedPtr _reset_srv;
         rclcpp::Service<realsense2_camera_msgs::srv::DeviceInfo>::SharedPtr _device_info_srv;
         std::shared_ptr<Parameters> _parameters;
         std::list<std::string> _parameters_names;
@@ -161,6 +163,8 @@ namespace realsense2_camera
         void restartStaticTransformBroadcaster();
         void publishExtrinsicsTopic(const stream_index_pair& sip, const rs2_extrinsics& ex);
         virtual void calcAndAppendTransformMsgs(const rs2::stream_profile& profile, const rs2::stream_profile& base_profile);
+        void handleHWReset(const std_srvs::srv::Empty::Request::SharedPtr req,
+                                const std_srvs::srv::Empty::Response::SharedPtr res);
         void getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res);
         tf2::Quaternion rotationMatrixToQuaternion(const float rotation[9]) const;
