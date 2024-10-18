@@ -80,10 +80,22 @@ To build the image:
 ```
 sudo docker build -t realsense-ros-galactic --build-arg ROS_VERSION=galactic .
 ```
+
 To start the container:
+
 ```
 sudo docker compose up -d
-``
+```
+Before connecting to the container, run the following to be able to view the display:
+
+```
+xhost +local:docker
+```
+
+then:
+```
+sudo docker exec -it realsense_container bash
+```
 
 ## Usage Instructions
 
