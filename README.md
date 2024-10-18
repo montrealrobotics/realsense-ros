@@ -104,6 +104,18 @@ LibRealSense2 supported version: v2.50.0 (see [realsense2_camera release notes](
   ```batch
   devel\setup.bat
   ```
+### Docker
+To use with the Realsense T265, a specific version of librealsense is required (2.53.1), a [Dockerfile](https://github.com/montrealrobotics/realsense-ros/blob/ros1-legacy/Dockerfile) is provided to build an image with this version, realsense-ros and pyrealsense2 are included in the image.
+
+To build the image:
+
+```
+sudo docker build -t realsense-ros-noetic --build-arg ROS_VERSION=noetic .
+```
+To start the container:
+```
+sudo docker compose up -d
+```
 
 ## Usage Instructions
 
