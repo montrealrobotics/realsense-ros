@@ -87,7 +87,7 @@ RUN if [ "$ROS_VERSION" = "noetic" ]; then \
         apt-get update && apt-get install -y python3-catkin-tools && \
         mkdir -p /home/rosuser/catkin_ws/src && \
         cd /home/rosuser/catkin_ws/src && \
-        git clone https://github.com/IntelRealSense/realsense-ros.git && \
+        git clone https://github.com/montrealrobotics/realsense-ros.git && \
         cd realsense-ros && \
         git checkout ros1-legacy && \
         cd /home/rosuser/catkin_ws && \
@@ -98,7 +98,7 @@ RUN if [ "$ROS_VERSION" = "noetic" ]; then \
         pip3 install -U colcon-common-extensions && \
         mkdir -p /home/rosuser/ros2_ws/src && \
         cd /home/rosuser/ros2_ws/src && \
-        git clone https://github.com/IntelRealSense/realsense-ros.git && \
+        git clone https://github.com/montrealrobotics/realsense-ros.git && \
         cd realsense-ros && \
         git checkout ros2-legacy && \
 	apt-get update && apt-get install -y \
@@ -109,7 +109,8 @@ RUN if [ "$ROS_VERSION" = "noetic" ]; then \
         rosdep install --from-paths src --ignore-src -r -y --skip-keys=librealsense2 && \
         cd /home/rosuser/ros2_ws && \
 	colcon build --packages-select realsense2_camera_msgs --cmake-args -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_BUILD_TYPE=Release && \
-	colcon build --packages-select realsense2_camera --cmake-args -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_BUILD_TYPE=Release"; \
+	colcon build --packages-select realsense2_camera --cmake-args -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_BUILD_TYPE=Release && \
+	colcon build --packages-select realsense2_description --cmake-args -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_BUILD_TYPE=Release"; \
     fi
 
 # Set environment variables for the selected ROS version
