@@ -10,8 +10,7 @@ aluminum peripherial evaluation case.
 
 <robot name="sensor_t265" xmlns:xacro="http://ros.org/wiki/xacro">
   <!--File includes-->
-  <xacro:include filename="$(find realsense_simulation)/urdf/_t265.gazebo.xacro"/>
-
+  <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
   <xacro:macro name="sensor_t265" params="parent name:=camera topics_ns:=camera *origin">
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
@@ -25,10 +24,6 @@ aluminum peripherial evaluation case.
     <xacro:property name="fisheye2_offset_y" value="0.0"/>
     <xacro:property name="fisheye2_offset_z" value="0.0"/>
 
-    <material name="${name}_aluminum">
-      <color rgba="0.5 0.5 0.5 1"/>
-    </material>
-
     <!-- camera body, with origin at camera_link -->
     <joint name="${name}_pose_frame_joint" type="fixed">
       <xacro:insert_block name="origin" />
@@ -38,7 +33,7 @@ aluminum peripherial evaluation case.
     <link name="${name}_pose_frame"/>
 
     <joint name="${name}_pose_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${90 * deg_to_rad} 0 ${-90 * deg_to_rad}"/>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       <parent link="${name}_pose_frame"/>
       <child link="${name}_link" />
     </joint>
@@ -49,7 +44,7 @@ aluminum peripherial evaluation case.
         <geometry>
             <mesh filename="package://realsense2_description/meshes/t265.stl" />
         </geometry>
-        <material name="${name}_aluminum"/>
+        <material name="aluminum"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -109,9 +104,6 @@ aluminum peripherial evaluation case.
       <child link="${name}_accel_optical_frame" />
     </joint>
     <link name="${name}_accel_optical_frame"/>
-
-    <!-- Realsense Gazebo Plugin -->
-    <xacro:gazebo_t265 camera_name="${name}" fisheye1_reference_link="${name}_fisheye1_rgb_frame" fisheye2_reference_link="${name}_fisheye2_rgb_frame" topics_ns="${topics_ns}" fisheye1_optical_frame="${name}_fisheye1_optical_frame" fisheye2_optical_frame="${name}_fisheye2_optical_frame"/>
 
   </xacro:macro>
 

@@ -3,7 +3,7 @@
   <xacro:include filename="$(find realsense2_description)/urdf/_t265.urdf.xacro" />
 
   <link name="base_link" />
-  <sensor_t265 parent="base_link">
+  <xacro:sensor_t265 parent="base_link">
     <origin xyz="0 0 0" rpy="0 0 0"/>
-  </sensor_t265>
+  </xacro:sensor_t265>
 </robot>
