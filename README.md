@@ -72,7 +72,18 @@ This version supports ROS2 Dashing, Eloquent and Foxy.
   ```bash
   . install/local_setup.bash
   ```
+### Docker
+To use with the Realsense T265, a specific version of librealsense is required (2.53.1), a [Dockerfile](https://github.com/montrealrobotics/realsense-ros/blob/ros2-legacy/Dockerfile) is provided to build an image with this version, realsense-ros and pyrealsense2 are included in the image.
 
+To build the image:
+
+```
+sudo docker build -t realsense-ros-galactic --build-arg ROS_VERSION=galactic .
+```
+To start the container:
+```
+sudo docker compose up -d
+``
 
 ## Usage Instructions
 
