@@ -39,6 +39,9 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
+#include <geometry_msgs/msg/vector3_stamped.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -65,6 +68,7 @@ using realsense2_camera_msgs::msg::RGBD;
 #define FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << STREAM_NAME(sip) << "_frame")).str()
 #define IMU_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_imu_frame")).str()
 #define IMU_OPTICAL_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_imu_optical_frame")).str()
+#define ODOM_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_odom_frame")).str()
 #define OPTICAL_FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << STREAM_NAME(sip) << "_optical_frame")).str()
 #define ALIGNED_DEPTH_TO_FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << "aligned_depth_to_" << STREAM_NAME(sip) << "_frame")).str()
 
@@ -115,7 +119,7 @@ namespace realsense2_camera
                           std::shared_ptr<Parameters> parameters,
                           bool use_intra_process = false);
         ~BaseRealSenseNode();
-        void publishTopics();
+        virtual void publishTopics();
 
     public:
         enum class imu_sync_method{NONE, COPY, LINEAR_INTERPOLATION};
@@ -144,6 +148,7 @@ namespace realsense2_camera
         };
 
         std::string _base_frame_id;
+        std::string _odom_frame_id;
         bool _is_running;
         rclcpp::Node& _node;
         std::string _camera_name;
@@ -155,7 +160,7 @@ namespace realsense2_camera
 
         void restartStaticTransformBroadcaster();
         void publishExtrinsicsTopic(const stream_index_pair& sip, const rs2_extrinsics& ex);
-        void calcAndAppendTransformMsgs(const rs2::stream_profile& profile, const rs2::stream_profile& base_profile);
+        virtual void calcAndAppendTransformMsgs(const rs2::stream_profile& profile, const rs2::stream_profile& base_profile);
         void getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res);
         tf2::Quaternion rotationMatrixToQuaternion(const float rotation[9]) const;
@@ -167,6 +172,7 @@ namespace realsense2_camera
         void erase_static_tf_msg(const std::string& frame_id,
                                  const std::string& child_frame_id);
         void eraseTransformMsgs(const stream_index_pair& sip, const rs2::stream_profile& profile);
+        rs2::stream_profile getAProfile(const stream_index_pair& stream);
         void setup();
 
     private:
@@ -249,6 +255,7 @@ namespace realsense2_camera
         void FillImuData_Copy(const CimuData imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs);
         void ImuMessage_AddDefaultValues(sensor_msgs::msg::Imu& imu_msg);
         void FillImuData_LinearInterpolation(const CimuData imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs);
+        void pose_callback(rs2::frame frame);
         void imu_callback(rs2::frame frame);
         void imu_callback_sync(rs2::frame frame, imu_sync_method sync_method=imu_sync_method::COPY);
         void multiple_message_callback(rs2::frame frame, imu_sync_method sync_method);
@@ -308,6 +315,7 @@ namespace realsense2_camera
         std::map<stream_index_pair, rclcpp::Publisher<IMUInfo>::SharedPtr> _imu_info_publishers;
         std::map<stream_index_pair, rclcpp::Publisher<Extrinsics>::SharedPtr> _extrinsics_publishers;
         rclcpp::Publisher<realsense2_camera_msgs::msg::RGBD>::SharedPtr _rgbd_publisher;
+        rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr _odom_publisher;
         std::map<stream_index_pair, cv::Mat> _images;
         std::map<rs2_format, std::string> _rs_format_to_ros_format;
         std::map<rs2_format, int> _rs_format_to_cv_format;
@@ -318,11 +326,13 @@ namespace realsense2_camera
 
         rclcpp::Time _ros_time_base;
         bool _sync_frames;
+        bool _publish_odom_tf;
         bool _enable_rgbd;
         bool _is_color_enabled;
         bool _is_depth_enabled;
         bool _is_accel_enabled;
         bool _is_gyro_enabled;
+        bool _is_pose_enabled;
         bool _pointcloud;
         imu_sync_method _imu_sync_method;
         stream_index_pair _pointcloud_texture;

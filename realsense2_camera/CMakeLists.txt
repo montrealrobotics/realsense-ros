@@ -25,6 +25,8 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
+add_compile_options(-g)
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -117,7 +119,7 @@ find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
 
-find_package(realsense2 2.55.1)
+find_package(realsense2 2.53.1)
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   find_package(realsense2-gl 2.55.1)
 endif()
@@ -145,6 +147,7 @@ set(SOURCES
     src/profile_manager.cpp
     src/image_publisher.cpp
     src/tfs.cpp
+    src/t265_realsense_node.cpp
   )
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
@@ -198,6 +201,7 @@ set(INCLUDES
     include/realsense_node_factory.h
     include/base_realsense_node.h
     include/ros_sensor.h
+    include/t265_realsense_node.h
     include/ros_utils.h
     include/dynamic_params.h
     include/sensor_params.h

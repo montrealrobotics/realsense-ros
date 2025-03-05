@@ -14,6 +14,7 @@
 
 #include "../include/realsense_node_factory.h"
 #include "../include/base_realsense_node.h"
+#include "../include/t265_realsense_node.h"
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -185,6 +186,12 @@ void RealSenseNodeFactory::getDevice(rs2::device_list list)
         }
     }
 
+    bool remove_tm2_handle(_device && RS_T265_PID != std::stoi(_device.get_info(RS2_CAMERA_INFO_PRODUCT_ID), 0, 16));
+    if (remove_tm2_handle)
+    {
+        _ctx.unload_tracking_module();
+    }
+
     if (_device && _initial_reset)
     {
         _initial_reset = false;
@@ -270,7 +277,7 @@ void RealSenseNodeFactory::init()
         _serial_no = declare_parameter("serial_no", rclcpp::ParameterValue("")).get<rclcpp::PARAMETER_STRING>();
         _usb_port_id = declare_parameter("usb_port_id", rclcpp::ParameterValue("")).get<rclcpp::PARAMETER_STRING>();
         _device_type = declare_parameter("device_type", rclcpp::ParameterValue("")).get<rclcpp::PARAMETER_STRING>();
-        _wait_for_device_timeout = declare_parameter("wait_for_device_timeout", rclcpp::ParameterValue(-1.0)).get<rclcpp::PARAMETER_DOUBLE>();
+	_wait_for_device_timeout = declare_parameter("wait_for_device_timeout", rclcpp::ParameterValue(-1.0)).get<rclcpp::PARAMETER_DOUBLE>();
         _reconnect_timeout = declare_parameter("reconnect_timeout", 6.0);
 
         // A ROS2 hack: until a better way is found to avoid auto convertion of strings containing only digits to integers:
@@ -375,6 +382,9 @@ void RealSenseNodeFactory::startDevice()
         case RS457_PID:
         case RS_USB2_PID:
             _realSenseNode = std::unique_ptr<BaseRealSenseNode>(new BaseRealSenseNode(*this, _device, _parameters, this->get_node_options().use_intra_process_comms()));
+            break;
+	case RS_T265_PID:
+	    _realSenseNode = std::unique_ptr<T265RealsenseNode>(new T265RealsenseNode(*this, _device, _parameters));
             break;
         default:
             ROS_FATAL_STREAM("Unsupported device!" << " Product ID: 0x" << pid_str);

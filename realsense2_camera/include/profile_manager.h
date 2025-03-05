@@ -102,4 +102,21 @@ namespace realsense2_camera
         protected:
             std::map<stream_index_pair, std::shared_ptr<int> > _fps;
     };
+
+    class PoseProfilesManager : public ProfilesManager
+    {
+        public:
+            using ProfilesManager::ProfilesManager;
+            bool isWantedProfile(const rs2::stream_profile& profile) override;
+            void registerProfileParameters(std::vector<stream_profile> all_profiles, std::function<void()> update_sensor_func) override;
+
+        private:
+            void registerFPSParams();
+            bool isSameProfileValues(const rs2::stream_profile& profile, const rs2_stream stype, const int fps);
+            std::map<stream_index_pair, std::vector<int>> getAvailableFPSValues();
+
+        protected:
+            std::map<stream_index_pair, std::shared_ptr<int> > _fps;
+
+    };
 }

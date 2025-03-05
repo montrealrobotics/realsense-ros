@@ -57,7 +57,6 @@ std::string rs2_to_ros(std::string rs2_name)
         {"Depth to Disparity", "disparity filter"},
         {"Depth Visualization", "colorizer"}
     };
-    // std::cout << "rs2_name: " << rs2_name << std::endl;
     auto name_iter = libname_to_rosname.find(rs2_name);
     if (name_iter == libname_to_rosname.end())
         return rs2_name;

@@ -166,6 +166,16 @@ void BaseRealSenseNode::setAvailableSensors()
             ROS_DEBUG_STREAM("Set " << module_name << " as ImuSensor.");
             rosSensor = std::make_unique<RosSensor>(sensor, _parameters, imu_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, false, _dev.is<playback>());
         }
+	else if (sensor.is<rs2::fisheye_sensor>())
+        {
+            ROS_DEBUG_STREAM("Set " << module_name << " as FishEyeSensor.");
+            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, false, _dev.is<playback>());
+        }
+	else if (sensor.is<rs2::pose_sensor>())
+        {
+            ROS_DEBUG_STREAM("Set " << module_name << " as PoseSensor.");
+            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, multiple_message_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, false, _dev.is<playback>());
+        }
         else
         {
             ROS_WARN_STREAM("Module Name \"" << module_name << "\" does not define a callback.");
@@ -200,6 +210,7 @@ void BaseRealSenseNode::stopPublishers(const std::vector<stream_profile>& profil
         {
             _is_accel_enabled = false;
             _is_gyro_enabled = false;
+            _is_pose_enabled = false;
             _synced_imu_publisher.reset();
             _imu_publishers.erase(sip);
             _imu_info_publishers.erase(sip);
@@ -298,6 +309,19 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                                         rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(info_qos), info_qos));
             IMUInfo info_msg = getImuInfo(profile);
             _imu_info_publishers[sip]->publish(info_msg);
+        }
+        else if (profile.is<rs2::pose_stream_profile>())
+        {
+            if (profile.stream_type() == RS2_STREAM_POSE)
+                _is_pose_enabled = true;
+
+            std::stringstream data_topic_name, info_topic_name;
+            data_topic_name << "~/" << stream_name << "/sample";
+            if (_is_pose_enabled)
+            {
+                _odom_publisher = _node.create_publisher<nav_msgs::msg::Odometry>(data_topic_name.str(),
+                rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(info_qos), info_qos));
+            }
         }
         std::string topic_metadata("~/" + stream_name + "/metadata");
         _metadata_publishers[sip] = _node.create_publisher<realsense2_camera_msgs::msg::Metadata>(topic_metadata, 

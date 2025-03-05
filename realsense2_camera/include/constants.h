@@ -44,6 +44,9 @@
 #define ROS_WARN_ONCE(msg) RCLCPP_WARN_ONCE(_logger, msg)
 #define ROS_WARN_COND(cond, ...) RCLCPP_WARN_EXPRESSION(_logger, cond, __VA_ARGS__)
 
+
+
+
 namespace realsense2_camera
 {
     const uint16_t RS400_PID        = 0x0ad1; // PSR
@@ -64,6 +67,7 @@ namespace realsense2_camera
     const uint16_t RS430i_PID       = 0x0b4b; // D430i
     const uint16_t RS405_PID        = 0x0B5B; // DS5U
     const uint16_t RS455_PID        = 0x0B5C; // D455
+    const uint16_t RS_T265_PID      = 0x0b37; // T265
     const uint16_t RS457_PID        = 0xABCD; // D457   
 
     const bool ALLOW_NO_TEXTURE_POINTS = false;
@@ -80,9 +84,11 @@ namespace realsense2_camera
     const std::string HID_QOS         = "SENSOR_DATA";
 
     const bool HOLD_BACK_IMU_FOR_FRAMES = false;
+    const bool PUBLISH_ODOM_TF = false;
 
     const std::string DEFAULT_BASE_FRAME_ID            = "link";
     const std::string DEFAULT_IMU_OPTICAL_FRAME_ID     = "camera_imu_optical_frame";
+    const std::string DEFAULT_TOPIC_ODOM_IN            = "pose/sample";
 
     const float ROS_DEPTH_SCALE = 0.001;
 

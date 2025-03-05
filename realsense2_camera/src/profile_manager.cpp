@@ -366,6 +366,8 @@ void VideoProfilesManager::registerVideoSensorProfileFormat(stream_index_pair si
         _formats[INFRA2] = RS2_FORMAT_Y8;
     else if (sip == COLOR)
         _formats[COLOR] = RS2_FORMAT_RGB8;
+    else if (sip == FISHEYE)
+        _formats[FISHEYE] = RS2_FORMAT_RGB8;
     else
         _formats[sip] = RS2_FORMAT_ANY;
 }
@@ -407,6 +409,18 @@ void VideoProfilesManager::registerVideoSensorParams(std::set<stream_index_pair>
                 else if (sip_default_profiles.find(DEPTH) != sip_default_profiles.end())
                 {
                     default_profile = validateAndGetSuitableProfile(stream_type, sip_default_profiles[DEPTH]);
+                }
+                break;
+	    case RS2_STREAM_FISHEYE:
+                if (sip_default_profiles.find(FISHEYE) != sip_default_profiles.end())
+                {
+                    default_profile = sip_default_profiles[FISHEYE];
+                }
+                break;
+	    case RS2_STREAM_POSE:
+                if (sip_default_profiles.find(POSE) != sip_default_profiles.end())
+                {
+                    default_profile = sip_default_profiles[POSE];
                 }
                 break;
             default:
@@ -602,6 +616,123 @@ void MotionProfilesManager::registerFPSParams()
     {
         stream_index_pair sip = sip_default_profile.first;
         *(_fps[sip]) = sip_default_profile.second.as<rs2::motion_stream_profile>().fps();
+    }
+
+    // Register ROS parameters:
+    for (auto& fps : _fps)
+    {
+        stream_index_pair sip(fps.first);
+        std::string param_name = applyTemplateName("%s_fps", sip);
+
+        std::stringstream description_str;
+        std::copy(sips_fps_values[sip].begin(), sips_fps_values[sip].end(), std::ostream_iterator<int>(description_str, "\n"));
+        std::string description(description_str.str());
+        description.pop_back();
+
+        rcl_interfaces::msg::ParameterDescriptor crnt_descriptor;
+        crnt_descriptor.description = "Available options are:\n" + description;
+        std::shared_ptr<int> param(_fps[sip]);
+        std::vector<int> available_values(sips_fps_values[sip]);
+        _params.getParameters()->setParam<int>(param_name, *(fps.second), [this, sip](const rclcpp::Parameter& parameter)
+            {
+                int next_fps(parameter.get_value<int>());
+                bool found(false);
+                bool request_default(false);
+                if (next_fps <= 0)
+                {
+                    found = false;
+                    request_default = true;
+                }
+                else
+                {
+                    for (const auto& profile : _all_profiles)
+                    {
+                        found = false;
+                        if (isSameProfileValues(profile, sip.first, next_fps))
+                        {
+                            *(_fps[sip]) = next_fps;
+                            found = true;
+                            ROS_WARN_STREAM("re-enable the stream for the change to take effect.");
+                            break;
+                        }
+                    }
+                }
+                if (!found)
+                {
+                    if (request_default)
+                    {
+                        ROS_INFO_STREAM("Set ROS param " << parameter.get_name() << " to default: " << *(_fps[sip]));
+                    }
+                    else
+                    {
+                        ROS_ERROR_STREAM("Given value, " << parameter.get_value<int>() << " is invalid. Set ROS param back to: " << *(_fps[sip]));
+                    }
+                    _params.getParameters()->queueSetRosValue(parameter.get_name(), *(_fps[sip]));
+                }
+            }, crnt_descriptor);
+    _parameters_names.push_back(param_name);
+
+    }
+}
+
+bool PoseProfilesManager::isSameProfileValues(const rs2::stream_profile& profile, const rs2_stream stype, const int fps)
+{
+    return (profile.stream_type() == stype && profile.fps() == fps);
+}
+
+bool PoseProfilesManager::isWantedProfile(const rs2::stream_profile& profile)
+{
+    stream_index_pair stream(profile.stream_type(), profile.stream_index());
+    return true;
+}
+
+std::map<stream_index_pair, std::vector<int>> PoseProfilesManager::getAvailableFPSValues()
+{
+    std::map<stream_index_pair, std::vector<int>> res;
+    for (auto& profile : _all_profiles)
+    {
+        stream_index_pair sip(profile.stream_type(), profile.stream_index());
+        res[sip].push_back(profile.as<rs2::pose_stream_profile>().fps());
+    }
+    return res;
+}
+
+void PoseProfilesManager::registerProfileParameters(std::vector<stream_profile> all_profiles, std::function<void()> update_sensor_func)
+{
+    std::set<stream_index_pair> checked_sips;
+    for (auto& profile : all_profiles)
+    {
+        if (!profile.is<pose_stream_profile>()) continue;
+        ROS_DEBUG_STREAM("Register profile: " << profile_string(profile));
+        _all_profiles.push_back(profile);
+        stream_index_pair sip(profile.stream_type(), profile.stream_index());
+        checked_sips.insert(sip);
+    }
+    if (_all_profiles.empty()) return;
+
+    registerSensorUpdateParam("enable_%s", checked_sips, _enabled_profiles, true, update_sensor_func);
+    registerSensorQOSParam("%s_qos", checked_sips, _profiles_image_qos_str, HID_QOS);
+    registerSensorQOSParam("%s_info_qos", checked_sips, _profiles_info_qos_str, DEFAULT_QOS);
+}
+
+void PoseProfilesManager::registerFPSParams()
+{
+    if (_all_profiles.empty()) return;
+    std::map<stream_index_pair, std::vector<int>> sips_fps_values = getAvailableFPSValues();
+
+    // Set default fps to minimum fps available for the stream:
+    for (auto& sip_fps_values : sips_fps_values)
+    {
+        int min_fps = *(std::min_element(sip_fps_values.second.begin(), sip_fps_values.second.end()));
+        _fps.insert(std::pair<stream_index_pair, std::shared_ptr<int>>(sip_fps_values.first, std::make_shared<int>(min_fps)));
+    }
+
+    // Overwrite with default values:
+    std::map<stream_index_pair, rs2::stream_profile> sip_default_profiles = getDefaultProfiles();
+    for (auto sip_default_profile : sip_default_profiles)
+    {
+        stream_index_pair sip = sip_default_profile.first;
+        *(_fps[sip]) = sip_default_profile.second.as<rs2::pose_stream_profile>().fps();
     }
 
     // Register ROS parameters:
