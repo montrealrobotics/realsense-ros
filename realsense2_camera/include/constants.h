@@ -84,11 +84,11 @@ namespace realsense2_camera
     const std::string HID_QOS         = "SENSOR_DATA";
 
     const bool HOLD_BACK_IMU_FOR_FRAMES = false;
-    const bool PUBLISH_ODOM_TF = false;
+    const bool PUBLISH_ODOM_TF = true;
 
     const std::string DEFAULT_BASE_FRAME_ID            = "link";
     const std::string DEFAULT_IMU_OPTICAL_FRAME_ID     = "camera_imu_optical_frame";
-    const std::string DEFAULT_TOPIC_ODOM_IN            = "pose/sample";
+    const std::string DEFAULT_TOPIC_ODOM_IN            = "";
 
     const float ROS_DEPTH_SCALE = 0.001;
 

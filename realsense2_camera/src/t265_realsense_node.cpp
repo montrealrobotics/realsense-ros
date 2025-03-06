@@ -57,7 +57,6 @@ void T265RealsenseNode::setupSubscribers()
     std::string topic_odom_in;
     std::string param_name = std::string("topic_odom_in");
     topic_odom_in = _parameters->setParam<std::string>(param_name, DEFAULT_TOPIC_ODOM_IN);
-    topic_odom_in = _camera_name + "/" + topic_odom_in;
     ROS_INFO_STREAM("Subscribing to in_odom topic: " << topic_odom_in);
 
     _odom_subscriber = _node.create_subscription<nav_msgs::msg::Odometry>(topic_odom_in, 1, std::bind(&T265RealsenseNode::odom_in_callback, this, std::placeholders::_1));

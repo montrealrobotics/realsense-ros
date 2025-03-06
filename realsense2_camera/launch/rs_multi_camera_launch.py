@@ -50,14 +50,36 @@ def duplicate_params(general_params, posix):
     return local_params
 
 def launch_static_transform_publisher_node(context : LaunchContext):
-    # dummy static transformation from camera1 to camera2
+    camera_tf1 = None
+    camera_tf2 = None
+
+    # Determine frame names based on device types
+    if context.launch_configurations['device_type1'] == 't265':
+        camera_tf1 = context.launch_configurations['camera_name1'] + '_pose_frame'
+    else:
+        camera_tf2 = context.launch_configurations['camera_name1'] + '_link'
+
+    if context.launch_configurations['device_type2'] == 't265':
+        # Only set if not already set
+        if camera_tf1 is None:
+            camera_tf1 = context.launch_configurations['camera_name2'] + '_pose_frame'
+    else:
+        # Only set if not already set
+        if camera_tf2 is None:
+            camera_tf2 = context.launch_configurations['camera_name2'] + '_link'
     node = launch_ros.actions.Node(
             package = "tf2_ros",
             executable = "static_transform_publisher",
-            arguments = ["0", "0", "0", "0", "0", "0",
-                          context.launch_configurations['camera_name1'] + "_link",
-                          context.launch_configurations['camera_name2'] + "_link"]
-    )
+                arguments=[
+                    "--x", "0",
+                    "--y", "0",
+                    "--z", "0",
+                    "--roll", "0",
+                    "--pitch", "0",
+                    "--yaw", "0",
+                    "--frame-id", camera_tf1,
+                    "--child-frame-id", camera_tf2]
+                )
     return [node]
 
 def generate_launch_description():

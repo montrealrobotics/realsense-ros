@@ -88,7 +88,7 @@ void BaseRealSenseNode::getParameters()
     _parameters_names.push_back(param_name);
 
     param_name = std::string("publish_odom_tf");
-    _odom_frame_id = _parameters->setParam<bool>(param_name, PUBLISH_ODOM_TF);
+    _publish_odom_tf = _parameters->setParam<bool>(param_name, PUBLISH_ODOM_TF);
     _parameters_names.push_back(param_name);
 
 #if defined (ACCELERATE_GPU_WITH_GLSL)

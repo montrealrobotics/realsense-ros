@@ -19,6 +19,8 @@ from launch import LaunchDescription
 import launch_ros.actions
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
+from launch_ros.substitutions import FindPackageShare
+from launch.substitutions import PathJoinSubstitution
 
 
 configurable_parameters = [{'name': 'camera_name',                  'default': 'camera', 'description': 'camera unique name'},
@@ -58,7 +60,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'enable_sync',                  'default': 'false', 'description': "'enable sync mode'"},
                            {'name': 'enable_rgbd',                  'default': 'false', 'description': "'enable rgbd topic'"},
                            {'name': 'enable_gyro',                  'default': 'false', 'description': "'enable gyro stream'"},
-                           {'name': 'enable_pose',                  'default': 'false', 'description': "'enable pose stream'"},
+                           {'name': 'enable_pose',                  'default': 'true', 'description': "'enable pose stream'"},
                            {'name': 'enable_accel',                 'default': 'false', 'description': "'enable accel stream'"},
                            {'name': 'gyro_fps',                     'default': '0', 'description': "''"},
                            {'name': 'accel_fps',                    'default': '0', 'description': "''"},
@@ -75,8 +77,8 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': ''},
                            {'name': 'pointcloud.allow_no_texture_points', 'default': 'false', 'description': "''"},
                            {'name': 'align_depth.enable',           'default': 'false', 'description': 'enable align depth filter'},
-                           {'name': 'calib_odom_file',              'default': "''", 'description': "''"},
-                           {'name': 'topic_odom_in',                'default': 'pose/sample', 'description': 'topic for T265 wheel odometry'},
+                           {'name': 'calib_odom_file',              'default': PathJoinSubstitution([FindPackageShare('realsense2_camera'), 'config', 'calib_odom.json']), 'description': "''"},
+                           {'name': 'topic_odom_in',                'default': '', 'description': 'topic for T265 wheel odometry'},
                            {'name': 'colorizer.enable',             'default': 'false', 'description': 'enable colorizer filter'},
                            {'name': 'decimation_filter.enable',     'default': 'false', 'description': 'enable_decimation_filter'},
                            {'name': 'spatial_filter.enable',        'default': 'false', 'description': 'enable_spatial_filter'},
