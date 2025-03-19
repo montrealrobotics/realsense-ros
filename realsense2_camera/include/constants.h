@@ -88,7 +88,7 @@ namespace realsense2_camera
 
     const std::string DEFAULT_BASE_FRAME_ID            = "link";
     const std::string DEFAULT_IMU_OPTICAL_FRAME_ID     = "camera_imu_optical_frame";
-    const std::string DEFAULT_TOPIC_ODOM_IN            = "";
+    const std::string DEFAULT_TOPIC_ODOM_IN            = "odom_in";
 
     const float ROS_DEPTH_SCALE = 0.001;
 

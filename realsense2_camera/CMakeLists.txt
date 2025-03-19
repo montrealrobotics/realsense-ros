@@ -27,6 +27,9 @@ endif()
 
 add_compile_options(-g)
 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -119,9 +122,15 @@ find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
 
-find_package(realsense2 2.53.1)
+find_package(realsense2 2.53.1 EXACT REQUIRED)
+message(STATUS "==== REALSENSE2 DEBUG INFO ====")
+message(STATUS "realsense2 version: ${realsense2_VERSION}")
+message(STATUS "realsense2 library: ${realsense2_LIBRARY}")
+message(STATUS "realsense2 include dir: ${realsense2_INCLUDE_DIR}")
+message(STATUS "===============================")
+
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
-  find_package(realsense2-gl 2.55.1)
+  find_package(realsense2-gl 2.53.1)
 endif()
 if(NOT realsense2_FOUND)
     message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/IntelRealSense/librealsense/releases\n\n")
@@ -129,7 +138,7 @@ endif()
 
 #set(CMAKE_NO_SYSTEM_FROM_IMPORTED true)
 include_directories(include)
-
+include_directories(${realsense2_INCLUDE_DIR})
 include_directories(${OpenCV_INCLUDE_DIRS})  # add OpenCV includes to the included dirs
 
 set(node_plugins "")
@@ -301,6 +310,12 @@ install(DIRECTORY
 # Install example files
 install(DIRECTORY 
     examples
+    DESTINATION share/${PROJECT_NAME}
+)
+
+# Install config files
+install(DIRECTORY
+    config
     DESTINATION share/${PROJECT_NAME}
 )
 
