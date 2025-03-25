@@ -29,6 +29,8 @@ local_parameters = [{'name': 'camera_name1', 'default': 'D435', 'description': '
                     {'name': 'enable_fisheye12', 'default': 'true', 'description': 'topic for T265 wheel odometry'},
                     {'name': 'enable_fisheye22', 'default': 'true', 'description': 'topic for T265 wheel odometry'},
                     {'name': 'enable_pose2', 'default': 'true', 'description': 'enable pose stream'},
+                    {'name': 'align_depth.enable1', 'default': 'true', 'description': 'enable align depth filte
+r'},
                    ]
 
 def generate_launch_description():
