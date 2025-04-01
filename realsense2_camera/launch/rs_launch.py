@@ -15,7 +15,7 @@
 """Launch realsense2_camera node."""
 import os
 import yaml
-from launch import LaunchDescription
+from launch import LaunchDescription, LaunchContext
 import launch_ros.actions
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
@@ -62,6 +62,8 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'enable_gyro',                  'default': 'false', 'description': "'enable gyro stream'"},
                            {'name': 'enable_pose',                  'default': 'true', 'description': "'enable pose stream'"},
                            {'name': 'enable_accel',                 'default': 'false', 'description': "'enable accel stream'"},
+                           {'name': 'enable_fisheye1',              'default': 'true', 'description': "'enable fisheye stream'"},
+                           {'name': 'enable_fisheye2',              'default': 'true', 'description': "'enable fisheye stream'"},
                            {'name': 'gyro_fps',                     'default': '0', 'description': "''"},
                            {'name': 'accel_fps',                    'default': '0', 'description': "''"},
                            {'name': 'unite_imu_method',             'default': "0", 'description': '[0-None, 1-copy, 2-linear_interpolation]'},
@@ -77,8 +79,8 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': ''},
                            {'name': 'pointcloud.allow_no_texture_points', 'default': 'false', 'description': "''"},
                            {'name': 'align_depth.enable',           'default': 'false', 'description': 'enable align depth filter'},
-                           {'name': 'calib_odom_file',              'default': PathJoinSubstitution([FindPackageShare('realsense2_camera'), 'config', 'calib_odom.json']), 'description': "''"},
-                           {'name': 'topic_odom_in',                'default': 'odom_in', 'description': 'topic for T265 wheel odometry'},
+                           {'name': 'calib_odom_file',              'default': PathJoinSubstitution([FindPackageShare('domestibot_description'), 'config', 'calib_odom.json']), 'description': "''"},
+                           {'name': 'topic_odom_in',                'default': '/odom', 'description': 'topic for T265 wheel odometry'},
                            {'name': 'colorizer.enable',             'default': 'false', 'description': 'enable colorizer filter'},
                            {'name': 'decimation_filter.enable',     'default': 'false', 'description': 'enable_decimation_filter'},
                            {'name': 'spatial_filter.enable',        'default': 'false', 'description': 'enable_spatial_filter'},
@@ -124,7 +126,25 @@ def launch_setup(context, params, param_name_suffix=''):
             )
     ]
 
+def launch_static_transform_publisher_node(context : LaunchContext):
+    node = launch_ros.actions.Node(
+            package = "tf2_ros",
+            executable = "static_transform_publisher",
+                arguments=[
+                    "--x", "0",
+                    "--y", "0",
+                    "--z", "0",
+                    "--roll", "0",
+                    "--pitch", "0",
+                    "--yaw", "0",
+                    "--frame-id", "odom",
+                    "--child-frame-id", "camera_odom_frame"]
+                )
+    return [node]
+
+
 def generate_launch_description():
     return LaunchDescription(declare_configurable_parameters(configurable_parameters) + [
-        OpaqueFunction(function=launch_setup, kwargs = {'params' : set_configurable_parameters(configurable_parameters)})
+        OpaqueFunction(function=launch_setup, kwargs = {'params' : set_configurable_parameters(configurable_parameters)}),
+        OpaqueFunction(function=launch_static_transform_publisher_node)
     ])

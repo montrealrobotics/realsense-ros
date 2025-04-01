@@ -288,6 +288,7 @@ void VideoProfilesManager::registerProfileParameters(std::vector<stream_profile>
         if (!profile.is<video_stream_profile>()) continue;
         ROS_DEBUG_STREAM("Register profile: " << profile_string(profile));
         _all_profiles.push_back(profile);
+        // ROS_WARN_STREAM("Register profile: " << profile_string(profile));
         stream_index_pair sip(profile.stream_type(), profile.stream_index());
         checked_sips.insert(sip);
     }
@@ -366,8 +367,10 @@ void VideoProfilesManager::registerVideoSensorProfileFormat(stream_index_pair si
         _formats[INFRA2] = RS2_FORMAT_Y8;
     else if (sip == COLOR)
         _formats[COLOR] = RS2_FORMAT_RGB8;
-    else if (sip == FISHEYE)
-        _formats[FISHEYE] = RS2_FORMAT_RGB8;
+    else if (sip == FISHEYE1)
+        _formats[FISHEYE1] = RS2_FORMAT_RGB8;
+    else if (sip == FISHEYE2)
+        _formats[FISHEYE2] = RS2_FORMAT_RGB8;
     else
         _formats[sip] = RS2_FORMAT_ANY;
 }
@@ -412,9 +415,9 @@ void VideoProfilesManager::registerVideoSensorParams(std::set<stream_index_pair>
                 }
                 break;
 	    case RS2_STREAM_FISHEYE:
-                if (sip_default_profiles.find(FISHEYE) != sip_default_profiles.end())
+                if (sip_default_profiles.find(FISHEYE1) != sip_default_profiles.end())
                 {
-                    default_profile = sip_default_profiles[FISHEYE];
+                    default_profile = sip_default_profiles[FISHEYE1];
                 }
                 break;
 	    case RS2_STREAM_POSE:
@@ -703,7 +706,6 @@ void PoseProfilesManager::registerProfileParameters(std::vector<stream_profile> 
     for (auto& profile : all_profiles)
     {
         if (!profile.is<pose_stream_profile>()) continue;
-        ROS_DEBUG_STREAM("Register profile: " << profile_string(profile));
         _all_profiles.push_back(profile);
         stream_index_pair sip(profile.stream_type(), profile.stream_index());
         checked_sips.insert(sip);

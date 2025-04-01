@@ -205,16 +205,22 @@ void BaseRealSenseNode::stopPublishers(const std::vector<stream_profile>& profil
             _info_publishers.erase(sip);
             _depth_aligned_image_publishers.erase(sip);
             _depth_aligned_info_publisher.erase(sip);
+            _is_fisheye_enabled = false;
         }
         else if (profile.is<rs2::motion_stream_profile>())
         {
             _is_accel_enabled = false;
             _is_gyro_enabled = false;
-            _is_pose_enabled = false;
             _synced_imu_publisher.reset();
             _imu_publishers.erase(sip);
             _imu_info_publishers.erase(sip);
         }
+        else if (profile.is<rs2::pose_stream_profile>())
+        {
+            _is_pose_enabled = false;
+            _odom_publisher.reset();
+        }
+
         _metadata_publishers.erase(sip);
         _extrinsics_publishers.erase(sip);
 
@@ -242,6 +248,8 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                 _is_color_enabled = true;
             else if (profile.stream_type() == RS2_STREAM_DEPTH)
                 _is_depth_enabled = true;
+            else if (profile.stream_type() == RS2_STREAM_FISHEYE)
+                _is_fisheye_enabled = true;
             std::stringstream image_raw, camera_info;
             bool rectified_image = false;
             if (sensor.rs2::sensor::is<rs2::depth_sensor>())

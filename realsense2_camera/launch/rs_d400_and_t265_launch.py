@@ -22,15 +22,16 @@ import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.absolute()))
 import rs_launch
 
-local_parameters = [{'name': 'camera_name1', 'default': 'D435', 'description': 'camera unique name'},
+local_parameters = [{'name': 'camera_name1', 'default': 'camera', 'description': 'camera unique name'},
                     {'name': 'device_type1', 'default': 'd4.', 'description': 'choose device by type'},
-                    {'name': 'camera_name2', 'default': 'T265', 'description': 'camera unique name'},
+                    {'name': 'camera_name2', 'default': 'camera_t265', 'description': 'camera unique name'},
                     {'name': 'device_type2', 'default': 't265', 'description': 'choose device by type'},
-                    {'name': 'enable_fisheye12', 'default': 'true', 'description': 'topic for T265 wheel odometry'},
-                    {'name': 'enable_fisheye22', 'default': 'true', 'description': 'topic for T265 wheel odometry'},
+                    {'name': 'enable_fisheye12', 'default': 'false', 'description': 'enable fisheye'},
+                    {'name': 'enable_fisheye22', 'default': 'false', 'description': 'enable fisheye'},
                     {'name': 'enable_pose2', 'default': 'true', 'description': 'enable pose stream'},
-                    {'name': 'align_depth.enable1', 'default': 'true', 'description': 'enable align depth filte
-r'},
+                    {'name': 'align_depth.enable1', 'default': 'true', 'description': 'enable align depth filter'},
+                    {'name': 'rgb_camera.color_profile1',    'default': "640, 480, 30", 'description': 'format'},
+                    {'name': 'depth_module.depth_profile1',    'default': "640, 480, 30", 'description': 'format'},
                    ]
 
 def generate_launch_description():

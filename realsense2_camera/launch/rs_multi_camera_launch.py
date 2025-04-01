@@ -29,6 +29,7 @@ from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch.substitutions import LaunchConfiguration, ThisLaunchFileDir
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 import sys
+from launch.conditions import IfCondition
 import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.absolute()))
 import rs_launch
@@ -37,6 +38,7 @@ local_parameters = [{'name': 'camera_name1', 'default': 'camera1', 'description'
                     {'name': 'camera_name2', 'default': 'camera2', 'description': 'camera2 unique name'},
                     {'name': 'camera_namespace1', 'default': 'camera1', 'description': 'camera1 namespace'},
                     {'name': 'camera_namespace2', 'default': 'camera2', 'description': 'camera2 namespace'},
+                    {'name': 'static_transform', 'default': 'false', 'description': 'bool for launching static transform'},
                     ]
 
 def set_configurable_parameters(local_params):
@@ -70,6 +72,7 @@ def launch_static_transform_publisher_node(context : LaunchContext):
     node = launch_ros.actions.Node(
             package = "tf2_ros",
             executable = "static_transform_publisher",
+            condition=IfCondition(LaunchConfiguration('static_transform')),
                 arguments=[
                     "--x", "0",
                     "--y", "0",

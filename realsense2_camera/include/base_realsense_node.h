@@ -331,6 +331,7 @@ namespace realsense2_camera
         bool _is_color_enabled;
         bool _is_depth_enabled;
         bool _is_accel_enabled;
+        bool _is_fisheye_enabled;
         bool _is_gyro_enabled;
         bool _is_pose_enabled;
         bool _pointcloud;

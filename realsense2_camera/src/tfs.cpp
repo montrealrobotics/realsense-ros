@@ -192,7 +192,7 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
 
     if (profile.is<rs2::video_stream_profile>() &&
                 profile.stream_type() != RS2_STREAM_DEPTH &&
-                profile.stream_index() == 1)
+                profile.stream_index() == 0)
     {
         append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, ALIGNED_DEPTH_TO_FRAME_ID(sip));
         append_static_tf_msg(transform_ts_, zero_trans, quaternion_optical, 

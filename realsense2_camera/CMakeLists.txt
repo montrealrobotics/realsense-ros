@@ -313,12 +313,6 @@ install(DIRECTORY
     DESTINATION share/${PROJECT_NAME}
 )
 
-# Install config files
-install(DIRECTORY
-    config
-    DESTINATION share/${PROJECT_NAME}
-)
-
 # Test
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
