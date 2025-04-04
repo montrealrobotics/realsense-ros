@@ -81,7 +81,7 @@ void T265RealsenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
 
     // rotation quaternion from ROS CS to Optical CS
     tf2::Quaternion quaternion_optical;
-    quaternion_optical.setRPY(-M_PI / 2, 0, -M_PI/2);  // R,P,Y rotations over the original axes
+    quaternion_optical.setRPY(-M_PI/2, 0, -M_PI/2);  // R,P,Y rotations over the original axes
 
     // zero rotation quaternion, used for IMU
     tf2::Quaternion zero_rot_quaternions;
@@ -149,6 +149,8 @@ void T265RealsenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
     }
     else
     {
+	// Adding this as the rotation of pose frame to link frame is not considered
+        Q = Q.inverse() * Q ;
         append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, FRAME_ID(sip));
         append_static_tf_msg(transform_ts_, zero_trans, quaternion_optical, FRAME_ID(sip), OPTICAL_FRAME_ID(sip));
         // Add align_depth_to if exist:

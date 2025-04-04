@@ -79,7 +79,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': ''},
                            {'name': 'pointcloud.allow_no_texture_points', 'default': 'false', 'description': "''"},
                            {'name': 'align_depth.enable',           'default': 'false', 'description': 'enable align depth filter'},
-                           {'name': 'calib_odom_file',              'default': PathJoinSubstitution([FindPackageShare('domestibot_description'), 'config', 'calib_odom.json']), 'description': "''"},
+                           {'name': 'calib_odom_file',              'default': PathJoinSubstitution([FindPackageShare('realsense2_camera'), 'config', 'calib_odom.json']), 'description': "''"},
                            {'name': 'topic_odom_in',                'default': '/odom', 'description': 'topic for T265 wheel odometry'},
                            {'name': 'colorizer.enable',             'default': 'false', 'description': 'enable colorizer filter'},
                            {'name': 'decimation_filter.enable',     'default': 'false', 'description': 'enable_decimation_filter'},

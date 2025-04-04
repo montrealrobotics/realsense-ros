@@ -32,6 +32,7 @@ local_parameters = [{'name': 'camera_name1', 'default': 'camera', 'description':
                     {'name': 'align_depth.enable1', 'default': 'true', 'description': 'enable align depth filter'},
                     {'name': 'rgb_camera.color_profile1',    'default': "640, 480, 30", 'description': 'format'},
                     {'name': 'depth_module.depth_profile1',    'default': "640, 480, 30", 'description': 'format'},
+                    {'name': 'static_transform', 'default': 'false', 'description': 'bool for launching static transform'},
                    ]
 
 def generate_launch_description():

@@ -182,7 +182,6 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
     // We do all these products since we want to finish in ROS CS, while Q is a rotation from optical to optical,
     // and cant be used directly in ROS TF without this combination 
     Q = quaternion_optical * Q * quaternion_optical.inverse();
-
     // The translation vector is in the Optical CS, and we convert it to ROS CS inside append_static_tf_msg
     append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, FRAME_ID(sip));
     

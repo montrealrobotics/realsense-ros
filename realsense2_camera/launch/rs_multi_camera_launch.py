@@ -75,7 +75,7 @@ def launch_static_transform_publisher_node(context : LaunchContext):
             condition=IfCondition(LaunchConfiguration('static_transform')),
                 arguments=[
                     "--x", "0",
-                    "--y", "0",
+                    "--y", "0.2",
                     "--z", "0",
                     "--roll", "0",
                     "--pitch", "0",

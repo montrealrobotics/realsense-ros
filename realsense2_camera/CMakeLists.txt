@@ -301,11 +301,16 @@ install(
   DESTINATION include
 )
 
+install(
+  DIRECTORY config/
+  DESTINATION config
+)
+
 # Install launch files
 install(DIRECTORY 
     launch
     DESTINATION share/${PROJECT_NAME}
-    )
+)
 
 # Install example files
 install(DIRECTORY 
