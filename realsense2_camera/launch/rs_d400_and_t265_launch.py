@@ -33,6 +33,7 @@ local_parameters = [{'name': 'camera_name1', 'default': 'camera', 'description':
                     {'name': 'rgb_camera.color_profile1',    'default': "640, 480, 30", 'description': 'format'},
                     {'name': 'depth_module.depth_profile1',    'default': "640, 480, 30", 'description': 'format'},
                     {'name': 'static_transform', 'default': 'false', 'description': 'bool for launching static transform'},
+                    {'name': 'point_cloud.enable1', 'default': 'true', 'description': 'enable pointcloud'},
                    ]
 
 def generate_launch_description():
