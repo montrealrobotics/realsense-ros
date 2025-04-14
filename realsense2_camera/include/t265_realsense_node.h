@@ -18,7 +18,8 @@ namespace realsense2_camera
             void initializeOdometryInput();
             void setupSubscribers();
             void odom_in_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
-
+            rclcpp::Time last_callback_time_;
+            bool first_callback_ = true;
             rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _odom_subscriber;
             rs2::wheel_odometer _wo_snr;
             bool _use_odom_in;

@@ -57,13 +57,38 @@ void T265RealsenseNode::setupSubscribers()
     std::string topic_odom_in;
     std::string param_name = std::string("topic_odom_in");
     topic_odom_in = _parameters->setParam<std::string>(param_name, DEFAULT_TOPIC_ODOM_IN);
+    auto qos_realtime = rclcpp::QoS(
+        rclcpp::KeepLast(20))
+        .reliable()
+        .deadline(std::chrono::milliseconds(40))
+        .liveliness(rclcpp::LivelinessPolicy::Automatic)
+        .liveliness_lease_duration(std::chrono::seconds(1));
+
     ROS_INFO_STREAM("Subscribing to in_odom topic: " << topic_odom_in);
 
-    _odom_subscriber = _node.create_subscription<nav_msgs::msg::Odometry>(topic_odom_in, 1, std::bind(&T265RealsenseNode::odom_in_callback, this, std::placeholders::_1));
+    _odom_subscriber = _node.create_subscription<nav_msgs::msg::Odometry>(topic_odom_in, qos_realtime, std::bind(&T265RealsenseNode::odom_in_callback, this, std::placeholders::_1));
 }
 
 void T265RealsenseNode::odom_in_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
+    rclcpp::Time current_time = rclcpp::Clock().now();
+
+    if (!first_callback_)
+    {
+        double time_diff = (current_time - last_callback_time_).seconds();
+
+        if (time_diff > 0.1)
+        {
+            ROS_WARN_STREAM("The odom is taking a mad long time, " << time_diff << " seconds");
+        }
+    }
+    else
+    {
+        first_callback_ = false;
+    }
+
+    last_callback_time_ = current_time;
+
     ROS_DEBUG("Got in_odom message");
     rs2_vector velocity {-(float)(msg->twist.twist.linear.y),
                           (float)(msg->twist.twist.linear.z),

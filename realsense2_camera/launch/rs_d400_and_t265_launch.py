@@ -33,7 +33,12 @@ local_parameters = [{'name': 'camera_name1', 'default': 'camera', 'description':
                     {'name': 'rgb_camera.color_profile1',    'default': "640, 480, 30", 'description': 'format'},
                     {'name': 'depth_module.depth_profile1',    'default': "640, 480, 30", 'description': 'format'},
                     {'name': 'static_transform', 'default': 'false', 'description': 'bool for launching static transform'},
-                    {'name': 'point_cloud.enable1', 'default': 'true', 'description': 'enable pointcloud'},
+                    {'name': 'pointcloud.enable1', 'default': 'true', 'description': 'enable pointcloud'},
+                    {'name': 'tracking_module.enable_mapping2', 'default': 'true', 'description': 'enable mapping'},
+                    {'name': 'tracking_module.enable_pose_jumping2', 'default': 'false', 'description': 'enable pose jumping'},
+                    {'name': 'tracking_module.enable_relocalization2', 'default': 'false', 'description': 'enable relocalization'},
+                    {'name': 'publish_tf1', 'default': 'true', 'description': 'publish tf'},
+                    {'name': 'publish_tf2', 'default': 'false', 'description': 'publish tf'},
                    ]
 
 def generate_launch_description():

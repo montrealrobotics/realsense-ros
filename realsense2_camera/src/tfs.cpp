@@ -230,8 +230,10 @@ void BaseRealSenseNode::eraseTransformMsgs(const stream_index_pair& sip, const r
 void BaseRealSenseNode::publishStaticTransforms()
 {
     restartStaticTransformBroadcaster();
-
-    _static_tf_broadcaster->sendTransform(_static_tf_msgs);
+    if (_publish_tf)
+    {
+        _static_tf_broadcaster->sendTransform(_static_tf_msgs);
+    }
 }
 
 void BaseRealSenseNode::publishDynamicTransforms()

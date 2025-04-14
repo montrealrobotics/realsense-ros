@@ -90,6 +90,9 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'hdr_merge.enable',             'default': 'false', 'description': 'hdr_merge filter enablement flag'},
                            {'name': 'wait_for_device_timeout',      'default': '-1.', 'description': 'Timeout for waiting for device to connect (Seconds)'},
                            {'name': 'reconnect_timeout',            'default': '6.', 'description': 'Timeout(seconds) between consequtive reconnection attempts'},
+                           {'name': 'tracking_module.enable_mapping',           'default': 'true', 'description': 'enable mapping'},
+                           {'name': 'tracking_module.enable_pose_jumping',      'default': 'false', 'description': 'enable pose jumping'},
+                           {'name': 'tracking_module.enable_relocalization',      'default': 'false', 'description': 'enable relocalization'},
                           ]
 
 def declare_configurable_parameters(parameters):
