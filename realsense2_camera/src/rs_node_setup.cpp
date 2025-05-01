@@ -328,7 +328,7 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
             if (_is_pose_enabled)
             {
                 _odom_publisher = _node.create_publisher<nav_msgs::msg::Odometry>(data_topic_name.str(),
-                rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(info_qos), info_qos));
+                rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(qos), qos));
             }
         }
         std::string topic_metadata("~/" + stream_name + "/metadata");
