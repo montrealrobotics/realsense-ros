@@ -714,7 +714,7 @@ void PoseProfilesManager::registerProfileParameters(std::vector<stream_profile> 
 
     registerFPSParams();
     registerSensorUpdateParam("enable_%s", checked_sips, _enabled_profiles, true, update_sensor_func);
-    registerSensorQOSParam("%s_qos", checked_sips, _profiles_image_qos_str, HID_QOS);
+    registerSensorQOSParam("%s_qos", checked_sips, _profiles_image_qos_str, POSE_QOS);
     registerSensorQOSParam("%s_info_qos", checked_sips, _profiles_info_qos_str, DEFAULT_QOS);
 }
 

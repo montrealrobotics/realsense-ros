@@ -82,6 +82,7 @@ namespace realsense2_camera
     const std::string IMAGE_QOS    = "SYSTEM_DEFAULT";
     const std::string DEFAULT_QOS  = "DEFAULT";
     const std::string HID_QOS         = "SENSOR_DATA";
+    const std::string POSE_QOS         = "POSE_DATA";
 
     const bool HOLD_BACK_IMU_FOR_FRAMES = false;
     const bool PUBLISH_ODOM_TF = true;
