@@ -74,6 +74,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'publish_tf',                   'default': 'true', 'description': '[bool] enable/disable publishing static & dynamic TF'},
                            {'name': 'tf_publish_rate',              'default': '0.0', 'description': '[double] rate in Hz for publishing dynamic TF'},
                            {'name': 'pointcloud.enable',            'default': 'false', 'description': ''},
+                           {'name': 'pointcloud.pointcloud_qos',    'default': 'DEFAULT', 'description': 'set the qos for pointcloid topic'},
                            {'name': 'pointcloud.stream_filter',     'default': '2', 'description': 'texture stream for pointcloud'},
                            {'name': 'pointcloud.stream_index_filter','default': '0', 'description': 'texture stream index for pointcloud'},
                            {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': ''},
