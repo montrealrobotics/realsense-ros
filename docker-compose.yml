@@ -5,6 +5,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - /dev/bus/usb:/dev/bus/usb
+      - /run/udev:/run/udev:ro
     network_mode: "host"
     environment:
       - DISPLAY=${DISPLAY}

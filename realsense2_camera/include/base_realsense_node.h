@@ -151,6 +151,8 @@ namespace realsense2_camera
         std::string _base_frame_id;
         std::string _odom_frame_id;
         bool _is_running;
+        std::mutex _rs_mutex;
+        std::atomic_bool _node_alive{true};
         rclcpp::Node& _node;
         std::string _camera_name;
         std::vector<rs2_option> _monitor_options;
@@ -177,6 +179,8 @@ namespace realsense2_camera
                                  const std::string& child_frame_id);
         void eraseTransformMsgs(const stream_index_pair& sip, const rs2::stream_profile& profile);
         rs2::stream_profile getAProfile(const stream_index_pair& stream);
+        virtual void onBeforeHardwareReset() {};
+        rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _odom_subscriber;
         void setup();
 
     private:

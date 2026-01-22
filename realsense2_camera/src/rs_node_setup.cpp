@@ -543,29 +543,42 @@ void BaseRealSenseNode::publishServices()
                         {getDeviceInfo(req, res);});
 }
 
-void BaseRealSenseNode::handleHWReset(const std_srvs::srv::Empty::Request::SharedPtr req,
-                                const std_srvs::srv::Empty::Response::SharedPtr res)
+void BaseRealSenseNode::handleHWReset(
+    const std_srvs::srv::Empty::Request::SharedPtr req,
+    const std_srvs::srv::Empty::Response::SharedPtr res)
 {
     (void)req;
     (void)res;
+
     ROS_INFO_STREAM("Reset requested through service call");
-    if (_dev)
+    if (!_dev) return;
+
+    _node_alive.store(false, std::memory_order_release);
+
+    try
     {
-        try
+        onBeforeHardwareReset();
+
+        for (auto&& sensor : _available_ros_sensors)
         {
-            for(auto&& sensor : _available_ros_sensors)
-            {
-                std::string module_name(rs2_to_ros(sensor->get_info(RS2_CAMERA_INFO_NAME)));
-                ROS_INFO_STREAM("Stopping Sensor: " << module_name);
-                sensor->stop();
-            }
-            ROS_INFO("Resetting device...");
-            _dev.hardware_reset();
+            std::string module_name(rs2_to_ros(sensor->get_info(RS2_CAMERA_INFO_NAME)));
+            ROS_INFO_STREAM("Stopping Sensor: " << module_name);
+
+            try { sensor->stop(); }  catch (...) {}
+            try { sensor->close(); } catch (...) {}
         }
-        catch(const std::exception& ex)
-        {
-            ROS_WARN_STREAM("An exception has been thrown: " << __FILE__ << ":" << __LINE__ << ":" << ex.what());
-        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        ROS_INFO("Resetting device...");
+        _dev.hardware_reset();
+
+        _dev = rs2::device();
+        ROS_INFO("Reset done");
+    }
+    catch (const std::exception& ex)
+    {
+        ROS_WARN_STREAM("Exception in HW reset: " << ex.what());
     }
 }
 
