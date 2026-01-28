@@ -19,7 +19,8 @@
 #include <rclcpp/clock.hpp>
 #include <fstream>
 #include <image_publisher.h>
-
+#include <cmath>
+#include <limits>
 // Header files for disabling intra-process comms for static broadcaster.
 #include <rclcpp/publisher_options.hpp>
 #include <tf2_ros/qos.hpp>
@@ -87,6 +88,19 @@ size_t SyncedImuPublisher::getNumSubscribers()
     if (!_publisher) return 0;
     return _publisher->get_subscription_count();
 }
+
+static inline bool isFinite(double v) {
+  return std::isfinite(v);
+}
+
+static inline bool isFiniteQuat(double x, double y, double z, double w) {
+  return isFinite(x) && isFinite(y) && isFinite(z) && isFinite(w);
+}
+
+static inline bool isFiniteVec3(double x, double y, double z) {
+  return isFinite(x) && isFinite(y) && isFinite(z);
+}
+
 
 BaseRealSenseNode::BaseRealSenseNode(rclcpp::Node& node,
                                      rs2::device dev,
@@ -436,6 +450,14 @@ void BaseRealSenseNode::pose_callback(rs2::frame frame)
                 frame.get_profile().stream_index(),
                 rs2_timestamp_domain_to_string(frame.get_frame_timestamp_domain()));
     rs2_pose pose = frame.as<rs2::pose_frame>().get_pose_data();
+
+    if (!isFiniteVec3(pose.translation.x, pose.translation.y, pose.translation.z) ||
+        !isFiniteQuat(pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w))
+    {
+        RCLCPP_WARN_THROTTLE(_node.get_logger(), *_node.get_clock(), 2000,
+                             "T265 pose invalid (NaN/Inf). Dropping frame.");
+        return;
+    }
     rclcpp::Time t(frameSystemTimeSec(frame));
 
     geometry_msgs::msg::PoseStamped pose_msg;

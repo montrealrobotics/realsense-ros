@@ -203,11 +203,25 @@ void T265RealsenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
     if (sip == POSE)
     {
         Q = Q.inverse();
+        if (!std::isfinite(Q.x()) ||
+            !std::isfinite(Q.y()) ||
+            !std::isfinite(Q.z()) ||
+            !std::isfinite(Q.w()))
+        {
+            return;
+        }
         append_static_tf_msg(transform_ts_, trans, Q, FRAME_ID(sip), _base_frame_id);
     }
     else
     {
         Q = Q.inverse() * Q;
+        if (!std::isfinite(Q.x()) ||
+            !std::isfinite(Q.y()) ||
+            !std::isfinite(Q.z()) ||
+            !std::isfinite(Q.w()))
+        {
+            return;
+        }
         append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, FRAME_ID(sip));
         append_static_tf_msg(transform_ts_, zero_trans, quaternion_optical, FRAME_ID(sip), OPTICAL_FRAME_ID(sip));
     }
